@@ -16,21 +16,15 @@ def receipt_process():
     validator = ReceiptSchema()
     validation_errors = validator.validate(data)
     if validation_errors:
-        return jsonify(validation_errors), 400
-    
-    
-    print(data)
+        return jsonify(validation_errors), 400    
     
     retailer_name = data.get('retailer')
-    print(retailer_name)
-    print(type(retailer_name))
     retailer_name_length = alpha_numeric_counter(retailer_name)
 
     items = data.get('items')
     
     purchase_date = data.get('purchaseDate')
     purchase_time = data.get('purchaseTime')
-    #print(type(purchase_date))
     total = float(data.get('total'))
     
     purchase_day = day_check(purchase_date)
@@ -81,5 +75,5 @@ def receipt_points(id):
          
  
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000, debug=False)
     
