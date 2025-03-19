@@ -14,9 +14,9 @@ def receipt_process():
     data = request.get_json()
 
     validator = ReceiptSchema()
-    is_valid = validator.validate(data)
-    if is_valid:
-        return jsonify(is_valid)
+    validation_errors = validator.validate(data)
+    if validation_errors:
+        return jsonify(validation_errors), 400
     
     
     print(data)
@@ -75,7 +75,7 @@ def receipt_process():
 def receipt_points(id):
     
     if id not in database:
-        return jsonify({'error': 'Wrong Key'}), 400
+        return jsonify({'error': 'Wrong Key'}), 404
      
     return jsonify({'points': database[id]})
          
