@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 import uuid
-from datetime import datetime, time
+from validation import ReceiptSchema
 import math
 from helpers import day_check, time_check, alpha_numeric_counter
 
@@ -12,16 +12,25 @@ database = {}
 def receipt_process():
     
     data = request.get_json()
-    if not data:
-        return jsonify({'error': 'No Data Provided'}), 404
+
+    validator = ReceiptSchema()
+    is_valid = validator.validate(data)
+    if is_valid:
+        return jsonify(is_valid)
+    
+    
+    print(data)
     
     retailer_name = data.get('retailer')
+    print(retailer_name)
+    print(type(retailer_name))
     retailer_name_length = alpha_numeric_counter(retailer_name)
 
     items = data.get('items')
     
     purchase_date = data.get('purchaseDate')
     purchase_time = data.get('purchaseTime')
+    #print(type(purchase_date))
     total = float(data.get('total'))
     
     purchase_day = day_check(purchase_date)
@@ -61,6 +70,7 @@ def receipt_process():
     
     return jsonify({'id': id}), 200
 
+
 @app.route('/receipts/<id>/points', methods=['GET'])
 def receipt_points(id):
     
@@ -72,5 +82,4 @@ def receipt_points(id):
  
 if __name__ == '__main__':
     app.run()
-     
-    app.run(debug=True)
+    
