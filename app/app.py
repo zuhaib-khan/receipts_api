@@ -1,8 +1,8 @@
 from flask import Flask, jsonify, request
 import uuid
-from validation import ReceiptSchema
+from app.validation import ReceiptSchema
 import math
-from helpers import day_check, time_check, alpha_numeric_counter
+from app.helpers import day_check, time_check, alpha_numeric_counter
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ def receipt_process():
     validator = ReceiptSchema()
     validation_errors = validator.validate(data)
     if validation_errors:
-        return jsonify(validation_errors), 400    
+        return jsonify({"descrption":  "The receipt is invalid."}), 400    
     
     retailer_name = data.get('retailer')
     retailer_name_length = alpha_numeric_counter(retailer_name)
@@ -69,7 +69,7 @@ def receipt_process():
 def receipt_points(id):
     
     if id not in database:
-        return jsonify({'error': 'Wrong Key'}), 404
+        return jsonify({"description": "No receipt found for that ID."}), 404
      
     return jsonify({'points': database[id]})
          
