@@ -1,4 +1,4 @@
-from flask import request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint, current_app
 import uuid
 from api.validation import ReceiptSchema
 import math
@@ -8,7 +8,6 @@ routes = Blueprint('routes', __name__)
 
 database = {}
 
-
 @routes.route('/receipts/process', methods=['POST'])
 def receipt_process():
     
@@ -17,6 +16,8 @@ def receipt_process():
     validator = ReceiptSchema()
     validation_errors = validator.validate(data)
     if validation_errors:
+        
+        current_app.logger.warning(validation_errors)
         return jsonify({"descrption":  "The receipt is invalid."}), 400    
     
     retailer_name = data.get('retailer')
