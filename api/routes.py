@@ -1,14 +1,15 @@
-from flask import Flask, jsonify, request
+from flask import request, jsonify, Blueprint
 import uuid
-from app.validation import ReceiptSchema
+from api.validation import ReceiptSchema
 import math
-from app.helpers import day_check, time_check, alpha_numeric_counter
+from api.helpers import day_check, time_check, alpha_numeric_counter
 
-app = Flask(__name__)
+routes = Blueprint('routes', __name__)
 
 database = {}
 
-@app.route('/receipts/process', methods=['POST'])
+
+@routes.route('/receipts/process', methods=['POST'])
 def receipt_process():
     
     data = request.get_json()
@@ -65,15 +66,10 @@ def receipt_process():
     return jsonify({'id': id}), 200
 
 
-@app.route('/receipts/<id>/points', methods=['GET'])
+@routes.route('/receipts/<id>/points', methods=['GET'])
 def receipt_points(id):
     
     if id not in database:
         return jsonify({"description": "No receipt found for that ID."}), 404
      
-    return jsonify({'points': database[id]})
-         
- 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
-    
+    return jsonify({'points': database[id]}), 200

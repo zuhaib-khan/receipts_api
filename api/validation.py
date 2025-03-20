@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate, ValidationError
+from marshmallow import Schema, fields
 
 class ItemSchema(Schema):
     shortDescription = fields.Str(required=True)

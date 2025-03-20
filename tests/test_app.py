@@ -1,5 +1,5 @@
 import pytest
-from app.app import app
+from api.app import app
 
 
 @pytest.fixture
@@ -17,12 +17,23 @@ test_payload = {
         ]
     }
 
+test_payload_2 = {
+        "retailer": "AnotherStore",
+        "purchaseDate": "2022-01-02",
+        "purchaseTime": "15:30",
+        "total": "10.25",
+        "items": [
+            {"shortDescription": "ItemOne", "price": "4.00"},
+            {"shortDescription": "ItemTwo", "price": "6.25"}
+        ]
+    }
+
 def test_wrong_request(client):
     fake_id = 12345
     response = client.get(f'/receipts/{fake_id}/process', json=test_payload)
     print(response.data)
     assert response.status_code == 404
-
+    
 
 def test_valid_receipt(client):
     response = client.post('/receipts/process', json=test_payload)
@@ -43,3 +54,23 @@ def test_no_payload(client):
     response = client.post('/receipts/process', json={})
     assert response.status_code == 400
     
+def test_multiple_receipts(client):
+    response1 = client.post('/receipts/process', json=test_payload)
+    assert response1.status_code == 200
+    receipt_id_1 = response1.get_json()["id"]
+ 
+    get_response1 = client.get(f'/receipts/{receipt_id_1}/points')
+    assert get_response1.status_code == 200
+    points1 = get_response1.get_json()['points']
+    expected_points1 = 20
+    assert points1 == expected_points1
+
+    response2 = client.post('/receipts/process', json=test_payload_2)
+    assert response2.status_code == 200
+    receipt_id_2 = response2.get_json()["id"]
+
+    get_response2 = client.get(f'/receipts/{receipt_id_2}/points')
+    assert get_response2.status_code == 200
+    points2 = get_response2.get_json()['points']
+    expected_points2 = 52
+    assert points2 == expected_points2
