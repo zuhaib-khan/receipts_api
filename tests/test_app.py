@@ -1,12 +1,12 @@
 import pytest
 from app import app
-from uuid import UUID
+
 
 @pytest.fixture
 def client():
     with app.test_client() as client:
         yield client
-        
+          
 test_payload = {
         "retailer": "M&M Corner Market",
         "purchaseDate": "2022-01-01",
